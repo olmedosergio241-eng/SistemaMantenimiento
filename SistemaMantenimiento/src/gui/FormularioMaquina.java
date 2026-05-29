@@ -4,6 +4,8 @@
  */
 package gui;
 import modelo.Maquina;
+import modelo.EstadoMaquina;
+
 /**
  *
  * @author Sergio Olmedo
@@ -13,9 +15,23 @@ public class FormularioMaquina extends javax.swing.JFrame {
     /**
      * Creates new form FormularioMaquina
      */
-    public FormularioMaquina() {
+    private VentanaPrincipal ventana;
+    public FormularioMaquina(VentanaPrincipal ventana) {
         initComponents();
-        setLocationRelativeTo(null);
+    setLocationRelativeTo(null);
+    this.ventana = ventana;
+    
+    // Limpiar los campos para que no tengan espacios o palabras como "vacio"
+    txtNombre.setText("");
+    txtFecha.setText("");
+    txtFrecuencia.setText(""); 
+    
+    // Configurar el combo (esto ya lo tienes bien)
+    cmbTipo.removeAllItems(); // Opcional: limpiar items por defecto de NetBeans
+    cmbTipo.addItem("Osciloscopio");
+    cmbTipo.addItem("Fuente de Alimentación");
+    cmbTipo.addItem("Multímetro");
+    cmbTipo.addItem("Generador de Señales");
     }
 
     /**
@@ -27,6 +43,7 @@ public class FormularioMaquina extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jComboBox1 = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -34,9 +51,12 @@ public class FormularioMaquina extends javax.swing.JFrame {
         btnGuardar = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         txtNombre = new javax.swing.JTextField();
-        txtTipo = new javax.swing.JTextField();
         txtFecha = new javax.swing.JTextField();
         txtFrecuencia = new javax.swing.JTextField();
+        cmbTipo = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,13 +77,19 @@ public class FormularioMaquina extends javax.swing.JFrame {
 
         jButton2.setText("Cancelar");
 
-        txtNombre.setText("vacio");
+        txtNombre.setText(" ");
 
-        txtTipo.setText("vacio");
-
-        txtFecha.setText("vacio");
+        txtFecha.setText(" ");
 
         txtFrecuencia.setText("vacio");
+
+        cmbTipo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbTipoItemStateChanged(evt);
+            }
+        });
+
+        jLabel5.setText("dd/MM/aaaa");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -72,10 +98,8 @@ public class FormularioMaquina extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(47, 47, 47)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnGuardar)
-                        .addGap(61, 61, 61)
-                        .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(btnGuardar)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
@@ -84,11 +108,13 @@ public class FormularioMaquina extends javax.swing.JFrame {
                             .addComponent(jLabel4))
                         .addGap(40, 40, 40)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtFrecuencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(127, Short.MAX_VALUE))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(txtFrecuencia, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cmbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtFecha, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+                                .addComponent(txtNombre)))))
+                .addContainerGap(341, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -100,20 +126,22 @@ public class FormularioMaquina extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtFecha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(txtFrecuencia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnGuardar)
-                    .addComponent(jButton2))
-                .addContainerGap(109, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnGuardar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton2)
+                .addGap(62, 62, 62))
         );
 
         pack();
@@ -121,17 +149,58 @@ public class FormularioMaquina extends javax.swing.JFrame {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         // TODO add your handling code here:
-        String nombre=txtNombre.getText();
-        String tipo =txtTipo.getText();
-        String fecha=txtFecha.getText();
+       try { 
+        String nombre = txtNombre.getText().trim();
+        String tipo = cmbTipo.getSelectedItem().toString();
+        String fecha = txtFecha.getText().trim();
+        String frecStr = txtFrecuencia.getText().trim();
+
+        // Validación básica
+        if (nombre.isEmpty() || fecha.isEmpty() || frecStr.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.");
+            return;
+        }
+
+        int frecuencia = Integer.parseInt(frecStr);
+        EstadoMaquina estado = EstadoMaquina.AL_DIA;
+
+        Maquina maquina = new Maquina(nombre, tipo, fecha, frecuencia, estado);
         
-        int frecuencia = Integer.parseInt(txtFrecuencia.getText());
-        String estado = "Activo";
+        // Aquí es donde ocurría el NullPointerException si ventana era null
+        ventana.agregarMaquina(maquina);
         
-        Maquina maquina =new Maquina (nombre,tipo,fecha,frecuencia,estado);
-        javax.swing.JOptionPane.showMessageDialog(this,"Maquina resgistrada correctamente");
+        javax.swing.JOptionPane.showMessageDialog(this, "Máquina registrada correctamente");
+        dispose();
         
+    } catch (NumberFormatException e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error: La frecuencia debe ser un número entero.");
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+    }
     }//GEN-LAST:event_btnGuardarActionPerformed
+
+    private void cmbTipoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbTipoItemStateChanged
+        // TODO add your handling code here:
+        String tipo = cmbTipo.getSelectedItem().toString();
+    
+    switch (tipo) {
+        case "Osciloscopio":
+            txtFrecuencia.setText("90");
+            break;
+        case "Fuente de Alimentación":
+            txtFrecuencia.setText("60");
+            break;
+        case "Multímetro":
+            txtFrecuencia.setText("120");
+            break;
+        case "Generador de Señales":
+            txtFrecuencia.setText("75");
+            break;
+        default:
+            txtFrecuencia.setText("");
+            break;
+        }
+    }//GEN-LAST:event_cmbTipoItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -163,21 +232,23 @@ public class FormularioMaquina extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FormularioMaquina().setVisible(true);
+                new FormularioMaquina(null).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
+    private javax.swing.JComboBox<String> cmbTipo;
     private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField txtFecha;
     private javax.swing.JTextField txtFrecuencia;
     private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextField txtTipo;
     // End of variables declaration//GEN-END:variables
 }

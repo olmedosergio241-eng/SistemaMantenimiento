@@ -3,20 +3,82 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package gui;
+import javax.swing.table.DefaultTableModel;
+import modelo.Maquina;
 import gui.FormularioMaquina;
+import java.util.ArrayList;
+import modelo.EstadoMaquina;
+
 /**
  *
  * @author Sergio Olmedo
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
+    private ArrayList<modelo.Maquina> listaMaquina;
 
     /**
      * Creates new form VentanaPrincipal
      */
-    public VentanaPrincipal() {
-        initComponents();
-        setLocationRelativeTo(null);
+    // Asegúrate de tener estos campos declarados al final de la clase (NetBeans lo hace solo)
+// private javax.swing.JTable tablaMaquinas;
+// private ArrayList<Maquina> listaMaquina;
+
+public VentanaPrincipal() {
+    initComponents();
+    setLocationRelativeTo(null);
+    
+    // Configuración de la tabla
+    String[] columnas = {"Nombre", "Tipo", "Últ. Mant.", "Frecuencia", "Estado"};
+    DefaultTableModel modeloBase = new DefaultTableModel(columnas, 0);
+    TablaMaquinas.setModel(modeloBase);
+    
+    listaMaquina = new ArrayList<>();
+}
+public void agregarMaquina(Maquina maquina) {
+        // 1. Guardar en la lista
+        listaMaquina.add(maquina);
+        
+        // 2. Actualizar la tabla
+        actualizarTabla();
     }
+
+    private void actualizarTabla() {
+    DefaultTableModel modelo = (DefaultTableModel) TablaMaquinas.getModel();
+    modelo.setRowCount(0); 
+    
+    for (Maquina m : listaMaquina) {
+        // Obtenemos el String del estado
+        String estadoTexto = m.getEstado();
+        
+        // Personalizamos el mensaje si quieres que sea más amigable
+        if(estadoTexto.equals("AL_DIA")) estadoTexto = "✅ Al Día";
+        if(estadoTexto.equals("VENCIDO")) estadoTexto = "❌ Mantenimiento Vencido";
+        if(estadoTexto.equals("PROXIMO_MANTENIMIENTO")) estadoTexto = "⚠️ Próximo (Menos de 7 días)";
+
+        Object fila[] = {
+            m.getNombre(),
+            m.getTipo(),
+            m.getFechaUltimoMantenimiento(),
+            m.getFrecuenciaDia() + " días",
+            estadoTexto
+        };
+        modelo.addRow(fila);
+    }
+}
+   public void actualizarEstadosPorFecha(String fechaSimulada) {
+    try {
+        for (Maquina m : listaMaquina) {
+            // Aquí enviamos la fecha que recibimos de la otra ventana
+            EstadoMaquina nuevoEstado = m.calcularEstado(fechaSimulada);
+            m.setEstado(nuevoEstado.name());
+        }
+        actualizarTabla();
+    } catch (Exception e) {
+        // Si sale el error, este mensaje te dirá qué TEXTO llegó realmente
+        javax.swing.JOptionPane.showMessageDialog(this, 
+            "Error: '" + fechaSimulada + "' no es una fecha válida.");
+    }
+}   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -29,18 +91,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        TablaMaquinas = new javax.swing.JTable();
+        btnAgregar = new javax.swing.JButton();
+        btnEditar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        btnEstado = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Sistema de Mantenimiento Programado");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TablaMaquinas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -51,20 +113,25 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 "Maquina", "Tipo", "Ultimo Mantenimiento", "Estado"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(TablaMaquinas);
 
-        jButton1.setText("Agregar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnAgregarActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Editar");
+        btnEditar.setText("Editar");
 
-        jButton3.setText("Eliminar");
+        btnEliminar.setText("Eliminar");
 
-        jButton4.setText("Ver Estado");
+        btnEstado.setText("Ver Estado");
+        btnEstado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEstadoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -73,24 +140,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(76, 76, 76)
                 .addComponent(jLabel1)
-                .addContainerGap(96, Short.MAX_VALUE))
+                .addContainerGap(553, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(22, 22, 22)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton2)
-                                    .addComponent(jButton1))
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton4)
-                            .addComponent(jButton3))
-                        .addGap(395, 395, 395)))
+                            .addComponent(btnEstado)
+                            .addComponent(btnEditar)
+                            .addComponent(btnAgregar)
+                            .addComponent(btnEliminar))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -101,25 +162,31 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(btnAgregar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addComponent(btnEditar)
+                .addGap(18, 18, 18)
+                .addComponent(btnEliminar)
+                .addGap(18, 18, 18)
+                .addComponent(btnEstado)
+                .addContainerGap(93, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
-        FormularioMaquina formulario= new FormularioMaquina();
-        formulario.setVisible(true);
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+        // CORRECTO: 'this' le pasa la VentanaPrincipal actual al formulario
+    FormularioMaquina form = new FormularioMaquina(this); // 'this' es la clave
+    form.setVisible(true);
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void btnEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEstadoActionPerformed
+        // TODO add your handling code here:
+        VentanaSimulacion vSim = new VentanaSimulacion(this);
+        vSim.setVisible(true);
+    }//GEN-LAST:event_btnEstadoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -157,12 +224,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JTable TablaMaquinas;
+    private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnEstado;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
