@@ -16,12 +16,40 @@ public class FormularioMaquina extends javax.swing.JFrame {
      * Creates new form FormularioMaquina
      */
     private VentanaPrincipal ventana;
+    private Maquina maquinaAEditar;
+    private boolean esEdicion = false;
+    
     public FormularioMaquina(VentanaPrincipal ventana) {
+    initComponents();
+    setLocationRelativeTo(null);
+    this.ventana = ventana;
+    this.esEdicion = false;
+    
+    txtNombre.setText("");
+    txtFecha.setText("");
+    txtFrecuencia.setText("");
+    
+    configurarComboBox(); 
+}
+    
+    public FormularioMaquina(VentanaPrincipal ventana,Maquina maquina) {
         initComponents();
     setLocationRelativeTo(null);
     this.ventana = ventana;
+    this.maquinaAEditar = maquina;
+    this.esEdicion = true;
     
-    // Limpiar los campos para que no tengan espacios o palabras como "vacio"
+    cmbTipo.removeAllItems();
+    cmbTipo.addItem("Osciloscopio");
+    cmbTipo.addItem("Fuente de Alimentación");
+    cmbTipo.addItem("Multímetro");
+    cmbTipo.addItem("Generador de Señales");
+    
+    txtNombre.setText(maquina.getNombre());
+    cmbTipo.setSelectedItem(maquina.getTipo());
+    txtFecha.setText(maquina.getFechaUltimoMantenimiento());
+    txtFrecuencia.setText(String.valueOf(maquina.getFrecuenciaDia()));
+    
     txtNombre.setText("");
     txtFecha.setText("");
     txtFrecuencia.setText(""); 
@@ -155,32 +183,44 @@ public class FormularioMaquina extends javax.swing.JFrame {
         String fecha = txtFecha.getText().trim();
         String frecStr = txtFrecuencia.getText().trim();
 
-        // Validación básica
         if (nombre.isEmpty() || fecha.isEmpty() || frecStr.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.");
             return;
         }
 
         int frecuencia = Integer.parseInt(frecStr);
-        EstadoMaquina estado = EstadoMaquina.AL_DIA;
 
-        Maquina maquina = new Maquina(nombre, tipo, fecha, frecuencia, estado);
+        if (esEdicion) {
+            // --- MODO EDICIÓN ---
+            // Modificamos directamente el objeto original en la lista
+            maquinaAEditar.setNombre(nombre);
+            maquinaAEditar.setTipo(tipo);
+            maquinaAEditar.setFechaUltimoMantenimiento(fecha);
+            maquinaAEditar.setFrecuenciaDia(frecuencia);
+            
+            // Le avisamos a la ventana principal que refresque la tabla
+            ventana.actualizarTabla(); 
+            javax.swing.JOptionPane.showMessageDialog(this, "Máquina actualizada correctamente");
+        } else {
+            // --- MODO NUEVO (Tu código anterior) ---
+            EstadoMaquina estado = EstadoMaquina.AL_DIA;
+            Maquina maquina = new Maquina(nombre, tipo, fecha, frecuencia, estado);
+            ventana.agregarMaquina(maquina);
+            javax.swing.JOptionPane.showMessageDialog(this, "Máquina registrada correctamente");
+        }
         
-        // Aquí es donde ocurría el NullPointerException si ventana era null
-        ventana.agregarMaquina(maquina);
-        
-        javax.swing.JOptionPane.showMessageDialog(this, "Máquina registrada correctamente");
         dispose();
         
     } catch (NumberFormatException e) {
         javax.swing.JOptionPane.showMessageDialog(this, "Error: La frecuencia debe ser un número entero.");
-    } catch (Exception e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
     }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void cmbTipoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbTipoItemStateChanged
         // TODO add your handling code here:
+        if (cmbTipo.getSelectedItem() == null) {
+        return; 
+    }
         String tipo = cmbTipo.getSelectedItem().toString();
     
     switch (tipo) {
@@ -251,4 +291,12 @@ public class FormularioMaquina extends javax.swing.JFrame {
     private javax.swing.JTextField txtFrecuencia;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
+
+    private void configurarComboBox() {
+    cmbTipo.removeAllItems();
+    cmbTipo.addItem("Osciloscopio");
+    cmbTipo.addItem("Fuente de Alimentación");
+    cmbTipo.addItem("Multímetro");
+    cmbTipo.addItem("Generador de Señales");
+        }
 }

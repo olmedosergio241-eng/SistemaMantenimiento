@@ -42,7 +42,7 @@ public void agregarMaquina(Maquina maquina) {
         actualizarTabla();
     }
 
-    private void actualizarTabla() {
+    public void actualizarTabla() {
     DefaultTableModel modelo = (DefaultTableModel) TablaMaquinas.getModel();
     modelo.setRowCount(0); 
     
@@ -123,8 +123,18 @@ public void agregarMaquina(Maquina maquina) {
         });
 
         btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         btnEstado.setText("Ver Estado");
         btnEstado.addActionListener(new java.awt.event.ActionListener() {
@@ -187,6 +197,41 @@ public void agregarMaquina(Maquina maquina) {
         VentanaSimulacion vSim = new VentanaSimulacion(this);
         vSim.setVisible(true);
     }//GEN-LAST:event_btnEstadoActionPerformed
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        // TODO add your handling code here:
+        int filaSeleccionada = TablaMaquinas.getSelectedRow();
+        if (filaSeleccionada == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione una máquina de la tabla para editar.");
+        return;
+    }
+       Maquina maquinaSeleccionada = listaMaquina.get(filaSeleccionada);
+       FormularioMaquina formEditar = new FormularioMaquina(this, maquinaSeleccionada);
+    formEditar.setVisible(true);
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        // TODO add your handling code here:
+        int filaSeleccionada = TablaMaquinas.getSelectedRow();
+    
+    if (filaSeleccionada == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, seleccione la máquina que desea eliminar.");
+        return;
+    }
+    
+    int respuesta = javax.swing.JOptionPane.showConfirmDialog(this, 
+            "¿Está seguro de que desea eliminar esta máquina?", 
+            "Confirmar eliminación", 
+            javax.swing.JOptionPane.YES_NO_OPTION);
+    
+    if (respuesta == javax.swing.JOptionPane.YES_OPTION) {
+        listaMaquina.remove(filaSeleccionada);
+        
+        actualizarTabla();
+        
+        javax.swing.JOptionPane.showMessageDialog(this, "Máquina eliminada correctamente.");
+    }
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
     /**
      * @param args the command line arguments
